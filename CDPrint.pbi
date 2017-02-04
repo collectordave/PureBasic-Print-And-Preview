@@ -86,16 +86,24 @@ Module CDPrint
   
   Procedure OpenPrintDB()
     
-    If FileExists(GetCurrentDirectory() + PrintJob + "\CDTemp.PRN")
-      PrintDB = OpenDatabase(#PB_Any,GetCurrentDirectory() + PrintJob + "\CDTemp.PRN","","")
-    Else
-     If CreateFile(0, GetCurrentDirectory() + PrintJob + "\CDTemp.PRN")
-       CloseFile(0)
-       PrintDB = OpenDatabase(#PB_Any,GetCurrentDirectory() + PrintJob + "\CDTemp.PRN","","")
-       DatabaseUpdate(PrintDB,"CREATE TABLE [Content] ([PageNumber] INTEGER NOT NULL,[Type] VARCHAR(10)  NULL,[x1] INTEGER  NULL,[y1] INTEGER  NULL,[x2] INTEGER  NULL,[y2] INTEGER  NULL,[Width] INTEGER  NULL,[Font] VARCHAR(20)  NULL,[FontSize] INTEGER  NULL,[TextOrImage] TEXT  NULL,[Colour] INTEGER  NULL,[Flags] INTEGER  NULL);")
-       DatabaseUpdate(PrintDB,"CREATE TABLE [Pages] ([PageNumber] INTEGER  NULL,[Orientation] INTEGER  NULL);")
-     EndIf
-   EndIf
+    
+    PrintDB = OpenDatabase(#PB_Any, ":memory:", "", "");, #PB_Database_SQLite)
+    Debug "Open DB " + Str(PrintDB)
+    DatabaseUpdate(PrintDB,"CREATE TABLE [Content] ([PageNumber] INTEGER NOT NULL,[Type] VARCHAR(10)  NULL,[x1] INTEGER  NULL,[y1] INTEGER  NULL,[x2] INTEGER  NULL,[y2] INTEGER  NULL,[Width] INTEGER  NULL,[Font] VARCHAR(20)  NULL,[FontSize] INTEGER  NULL,[TextOrImage] TEXT  NULL,[Colour] INTEGER  NULL,[Flags] INTEGER  NULL);")
+    DatabaseUpdate(PrintDB,"CREATE TABLE [Pages] ([PageNumber] INTEGER  NULL,[Orientation] INTEGER  NULL);")
+    Debug "Error " + DatabaseError()
+    
+    
+ ;   If FileExists(GetCurrentDirectory() + PrintJob + "\CDTemp.PRN")
+ ;     PrintDB = OpenDatabase(#PB_Any,GetCurrentDirectory() + PrintJob + "\CDTemp.PRN","","")
+ ;   Else
+ ;    If CreateFile(0, GetCurrentDirectory() + PrintJob + "\CDTemp.PRN")
+ ;      CloseFile(0)
+ ;      PrintDB = OpenDatabase(#PB_Any,GetCurrentDirectory() + PrintJob + "\CDTemp.PRN","","")
+ ;      DatabaseUpdate(PrintDB,"CREATE TABLE [Content] ([PageNumber] INTEGER NOT NULL,[Type] VARCHAR(10)  NULL,[x1] INTEGER  NULL,[y1] INTEGER  NULL,[x2] INTEGER  NULL,[y2] INTEGER  NULL,[Width] INTEGER  NULL,[Font] VARCHAR(20)  NULL,[FontSize] INTEGER  NULL,[TextOrImage] TEXT  NULL,[Colour] INTEGER  NULL,[Flags] INTEGER  NULL);")
+ ;      DatabaseUpdate(PrintDB,"CREATE TABLE [Pages] ([PageNumber] INTEGER  NULL,[Orientation] INTEGER  NULL);")
+ ;    EndIf
+ ;  EndIf
    
   EndProcedure
   
@@ -110,7 +118,7 @@ Module CDPrint
     EndIf
 
     ;Open Print Job
-    OpenPrintDB()
+    ;OpenPrintDB()
     
     ;Get Page Detail
     Criteria = "SELECT * FROM Pages WHERE PageNumber = " + Str(PageID) + ";"
@@ -189,7 +197,7 @@ Module CDPrint
     Wend
     FinishDatabaseQuery(PrintDB)
     StopVectorDrawing()
-    CloseDatabase(PrintDB)
+    ;CloseDatabase(PrintDB)
         
   EndProcedure 
    
@@ -355,7 +363,9 @@ Module CDPrint
                 Next iLoop
                 StopPrinting()
               EndIf
-           
+              CloseWindow(PreviewWindow)
+              QuitPreview = #True
+              
             Case #btnClose
            
               CloseWindow(PreviewWindow)
@@ -366,6 +376,8 @@ Module CDPrint
       EndSelect
   
     Until QuitPreview = #True
+    
+    CloseDatabase(PrintDB)
     
   EndProcedure
  
@@ -442,7 +454,7 @@ EndProcedure
     Define Criteria.s,TextImage.s,Font.s
     
     ;Open Print Job
-    OpenPrintDB()
+    ;OpenPrintDB()
     
     ;Get Page Detail
     Criteria = "SELECT * FROM Pages WHERE PageNumber = " + Str(CurrentPage) + ";"
@@ -523,7 +535,7 @@ EndProcedure
     Wend
     FinishDatabaseQuery(PrintDB)
     StopVectorDrawing()
-    CloseDatabase(PrintDB)
+    ;CloseDatabase(PrintDB)
     
     ;Show Image Centred
     SetGadgetState(#imgPreview, ImageID(PreviewImage))  
@@ -670,9 +682,9 @@ EndProcedure
         Next iLoop
         StopPrinting()
       EndIf
+      CloseDatabase(PrintDB)
       
     Else
-      CloseDatabase(PrintDB)
       ShowPreview()
     EndIf
         
@@ -707,8 +719,8 @@ EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.60 Beta 1 (Windows - x64)
-; CursorPosition = 400
-; FirstLine = 105
-; Folding = DCA+
+; CursorPosition = 378
+; FirstLine = 275
+; Folding = bzg+
 ; EnableXP
 ; EnableUnicode
