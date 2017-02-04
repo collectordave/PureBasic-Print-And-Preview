@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://www.purebasic.com/namespace" version="1.0" creator="PureBasic 5.60 Beta 1 (Windows - x64)">
+  <section name="config">
+    <options closefiles="1" openmode="0" name="CD Print Module"/>
+  </section>
+  <section name="data">
+    <explorer view="..\..\Program Files (x86)\PureBasic\Examples\" pattern="0"/>
+    <log show="1"/>
+    <lastopen date="2017-02-04 04:04" user="DaveSandy" host="MEDIAPC"/>
+  </section>
+  <section name="files">
+    <file name="CDPrint.pbi">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+"/>
+      <fingerprint md5="f89835275d7314acf0a4a84ba7d16713"/>
+    </file>
+    <file name="Print Test.pb">
+      <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+"/>
+      <fingerprint md5="d049162adb51e88e5900a7e931d26dec"/>
+    </file>
+  </section>
+  <section name="targets">
+    <target name="Default Target" enabled="1" default="1">
+      <inputfile value="Print Test.pb"/>
+      <outputfile value="CDPrintTest.exe"/>
+      <options xpskin="1" debug="1"/>
+    </target>
+  </section>
+</project>
