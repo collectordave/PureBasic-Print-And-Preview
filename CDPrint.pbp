@@ -7,16 +7,16 @@
   <section name="data">
     <explorer view="..\..\Program Files (x86)\PureBasic\Examples\" pattern="0"/>
     <log show="1"/>
-    <lastopen date="2017-02-04 09:36" user="DaveSandy" host="MEDIAPC"/>
+    <lastopen date="2017-02-05 15:32" user="DaveSandy" host="MEDIAPC"/>
   </section>
   <section name="files">
     <file name="CDPrint.pbi">
       <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+"/>
-      <fingerprint md5="814b6564f5490992950f5031f4f3e553"/>
+      <fingerprint md5="dd9f588ba6c40dcb18e86f6eca69fcc1"/>
     </file>
     <file name="Print Test.pb">
       <config load="0" scan="1" panel="1" warn="1" lastopen="1" panelstate="+"/>
-      <fingerprint md5="79174c44c35ec5e21b41327b5d56ce0c"/>
+      <fingerprint md5="b6c4fda7b512ab8d9e1df3038fe43cb2"/>
     </file>
   </section>
   <section name="targets">
