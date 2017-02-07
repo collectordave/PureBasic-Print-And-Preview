@@ -9,17 +9,21 @@ Enumeration WinMain
 EndEnumeration
 
 Procedure PrintMyPages()
- 
+  
+  Define iLoop.i
+  
   If CDPrint::Open("Test Print",CDPrint::#Preview) ;Can Be CDPrint::#NoPreview as well
     CDPrint::AddPage(CDPrint::#Portrait)
-    CDPrint::PrintLine(12,32,45,87,1)
+    For iLoop = 20 To 280 Step 20
+    CDPrint::PrintLine(10,iLoop,CDPrint::Printer\width - 10,iLoop,0.1, RGBA(100, 100, 100, 128))
+    Next iLoop
     CDPrint::PrintBox(20,20,50,50,5, RGBA(10, 200, 20, 128))
     CDPrint::AddPage(CDPrint::#Portrait)
     CDPrint::PrintText(20,20,"Arial",32,"The Quick Brown Fox")
     CDPrint::AddPage(CDPrint::#Landscape)
     CDPrint::PrintImageFromFile(GetCurrentDirectory() + "Eiffel.jpg",5,5,100,50, 128)
     CDPrint::AddPage(CDPrint::#Portrait)
-    CDPrint::PrintCanvas(#Canvas,10,10)
+    CDPrint::PrintCanvas(#Canvas,10,10,100,100)
     CDPrint::Finished()
   EndIf
 
@@ -70,6 +74,7 @@ Repeat
  
 ForEver
 ; IDE Options = PureBasic 5.60 Beta 1 (Windows - x64)
-; CursorPosition = 9
-; Folding = +
+; CursorPosition = 25
+; FirstLine = 13
+; Folding = -
 ; EnableXP
