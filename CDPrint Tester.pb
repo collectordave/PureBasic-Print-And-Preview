@@ -1,13 +1,12 @@
 ﻿;{ ==Code Header Comment==============================
-;         Name/title: CDPrint.pbi
+;         Name/title: CDPrint Tester.pb
 ;    Executable name: N/A
-;            Version: 1.0.1
-;    Original Author: Collectordave
-;Heavily Modyfied By: infratec
+;            Version: 1.0.0
+;    Original Author: infratec
 ;     Translation by: 
 ;        Create date: 05\Feb\2017
 ;  Previous releases: 
-;  This Release Date: 10\Feb\2017 
+;  This Release Date: 05\Feb\2017 
 ;   Operating system: Windows  [X]GUI
 ;   Compiler version: PureBasic 5.6B2 (x64)
 ;          Copyright: (C)2017
@@ -17,10 +16,12 @@
 ;       French Forum: 
 ;       German Forum: 
 ;   Tested platforms: Windows
-;        Description: Include module for print and print Preview
+;        Description: Programme To Test CDPrint Module
 ; ====================================================
 ;.......10........20........30........40........50........60........70........80
 ;}
+
+
 CompilerIf #PB_Compiler_IsMainFile
   EnableExplicit
 CompilerEndIf
@@ -124,43 +125,19 @@ Module CDPrint
   Global PrinterOrientation.i
   Global Dim PageRange.i(0)
   Global GraphicScale.f
+  ;Global TextScale.f
+ 
   Global SetPagesToPrint.SetPagesTPrintStructure
   Global ShowPreview.ShowPreviewStructure
  
   Global NewMap PageToPrint.PageStructure()
-  
-  Procedure.f GettextWidthmm(text.s,FName.s,FSize.f)
-   
-    Protected TextSize.f, TextWidth.f, Font.i
-     
-    StartVectorDrawing(PrinterVectorOutput(#PB_Unit_Millimeter))
-    Font = LoadFont(#PB_Any,FName, FSize)    ;Load Font In Points
-    TextSize = FSize * 0.352777778           ;Convert Font Points To mm
-    VectorFont(FontID(Font), TextSize )      ;Use Font In mm Size
-    TextWidth = VectorTextWidth(text,#PB_VectorText_Visible) ;Width of text In mm
-    FreeFont(Font)
-    StopVectorDrawing()
-    
-    ProcedureReturn TextWidth
-   
-  EndProcedure
-  
-  Procedure.f GettextHeightmm(text.s,FName.s,FSize.f)
-   
-    Protected TextSize.f, TextHeight.f, Font.i
-     
-    StartVectorDrawing(PrinterVectorOutput(#PB_Unit_Millimeter))   
-    Font = LoadFont(#PB_Any, FName, FSize)    ;Load Font In Points
-    TextSize = FSize * 0.352777778            ;Convert Font Points To mm
-    VectorFont(FontID(Font), TextSize)        ;Use Font In mm Size
-    TextHeight = VectorTextHeight(text,#PB_VectorText_Visible) ;Height of text In mm
-    FreeFont(Font)
-    StopVectorDrawing() 
-    ProcedureReturn TextHeight
-   
-  EndProcedure 
-  
+ 
+ 
+ 
+ 
   Procedure CleanUp()
+   
+    ;Debug "CleanUp"
    
     ForEach PageToPrint()
       ForEach PageToPrint()\PageData()
@@ -252,7 +229,8 @@ Module CDPrint
     EndIf
    
   EndProcedure
-  
+ 
+ 
   Procedure SetPagesToPrint_CloseWindow()
    
     Protected iLoop.i
@@ -273,7 +251,8 @@ Module CDPrint
     CleanUp()
    
   EndProcedure
-  
+ 
+ 
   Procedure SetPagesToPrint_btnOk()
    
     Protected StartPage.i, EndPage.i, iLoop.i, PageCount.i
@@ -317,11 +296,13 @@ Module CDPrint
     PostEvent(#PB_Event_CloseWindow, SetPagesToPrint\Window, 0, 0, #True)
    
   EndProcedure
-  
+ 
+ 
   Procedure SetPagesToPrint_btnCancel()
     PostEvent(#PB_Event_CloseWindow, SetPagesToPrint\Window, 0, 0, #False)
   EndProcedure
-  
+ 
+ 
   Procedure SetPagesToPrint()
    
     SetPagesToPrint\Window = OpenWindow(#PB_Any, 0, 0, 250, 150, "What To Print", #PB_Window_TitleBar | #PB_Window_Tool|#PB_Window_WindowCentered)
@@ -346,7 +327,8 @@ Module CDPrint
     BindGadgetEvent(SetPagesToPrint\btnCancel, @SetPagesToPrint_btnCancel())
    
   EndProcedure
-  
+ 
+ 
   Procedure ShowPreview_CloseWindow()
     CloseWindow(ShowPreview\Window)
     If EventData() = #False
@@ -361,7 +343,8 @@ Module CDPrint
       FreeImage(ShowPreview\ClearImage)
     EndIf
   EndProcedure
-  
+ 
+ 
   Procedure ShowPreview_spnPageSelect()
     If GetGadgetState(ShowPreview\spnPageSelect) > PageNo
       CurrentPage = PageNo
@@ -373,17 +356,27 @@ Module CDPrint
     SetGadgetState(ShowPreview\spnPageSelect,CurrentPage)
     PrintPage(CurrentPage, #Preview)
   EndProcedure
-  
+ 
+ 
   Procedure ShowPreview_btnPrint()
     SetPagesToPrint()
     PostEvent(#PB_Event_CloseWindow, ShowPreview\Window, 0, 0, #True)
   EndProcedure
-  
+ 
+ 
   Procedure ShowPreview_btnClose()
     PostEvent(#PB_Event_CloseWindow, ShowPreview\Window, 0, 0, #False)
   EndProcedure
-  
+ 
+ 
   Procedure ShowPreview()
+   
+    ;      Protected TPageHeight.i, TPageWidth.i
+   
+   
+    ;Scale Factors For Image
+    ;     TPageHeight = Printer\Height * 2.834645669 ;mm To Points
+    ;     TPageWidth = Printer\Width * 2.834645669
    
     If Printer\Height > Printer\Width
       GraphicScale.f = 500 / Printer\Height
@@ -416,7 +409,8 @@ Module CDPrint
     PrintPage(CurrentPage, #Preview)
    
   EndProcedure
-  
+ 
+ 
   Procedure GetPrinterInfo()
    
     CompilerSelect #PB_Compiler_OS
@@ -456,7 +450,38 @@ Module CDPrint
     CompilerEndSelect
    
   EndProcedure
-  
+ 
+ 
+  Procedure.f GettextWidthmm(text.s,FName.s,FSize.f)
+   
+    Protected TextSize.f, TextWidth.f, Font.i
+   
+    Font = LoadFont(#PB_Any,FName, FSize)    ;Load Font In Points
+    TextSize = FSize * 0.352777778           ;Convert Font Points To mm
+    VectorFont(FontID(Font), TextSize )      ;Use Font In mm Size
+    TextWidth = VectorTextWidth(text,#PB_VectorText_Visible) ;Width of text In mm
+    FreeFont(Font)
+   
+    ProcedureReturn TextWidth
+   
+  EndProcedure
+ 
+ 
+  Procedure.f GettextHeightmm(text.s,FName.s,FSize.f)
+   
+    Protected TextSize.f, TextHeight.f, Font.i
+   
+    Font = LoadFont(#PB_Any, FName, FSize)    ;Load Font In Points
+    TextSize = FSize * 0.352777778            ;Convert Font Points To mm
+    VectorFont(FontID(Font), TextSize)        ;Use Font In mm Size
+    TextHeight = VectorTextHeight(text,#PB_VectorText_Visible) ;Height of text In mm
+    FreeFont(Font)
+   
+    ProcedureReturn TextHeight
+   
+  EndProcedure
+ 
+ 
   Procedure.i Open(JobName.s, Mode.i = #Preview)
    
     Protected Result.i
@@ -476,6 +501,7 @@ Module CDPrint
         PrinterOrientation = #Landscape
       EndIf
      
+      ;Create Print Job Database
       PageNo = 0
       CurrentPage = 0
      
@@ -486,10 +512,13 @@ Module CDPrint
     ProcedureReturn Result
    
   EndProcedure
-  
+ 
+ 
   Procedure AddPage(Orientation.i)
    
     PageNo + 1
+   
+    ;Debug "AddPage: " + Str(PageNo)
    
     If AddMapElement(PageToPrint(), Str(PageNo))
       PageToPrint()\Orientation = Orientation
@@ -498,8 +527,12 @@ Module CDPrint
     EndIf
    
   EndProcedure
-  
+ 
+ 
   Procedure PrintLine(X1.i,Y1.i,X2.i,Y2.i,Width.f,Color.i=$FF000000)
+    
+    ;Debug "Print line " + StrF(Width)
+    
     
     If AddElement(PageToPrint()\PageData())
       PageToPrint()\PageData()\Type = #PrintType_Line
@@ -510,9 +543,10 @@ Module CDPrint
       PageToPrint()\PageData()\Width = Width
       PageToPrint()\PageData()\Color = Color
     EndIf
-
+   ;Debug "Print line " + StrF(PageToPrint()\PageData()\Width)
   EndProcedure
-  
+ 
+ 
   Procedure PrintBox(X1.i,Y1.i,X2.i,Y2.i,Width.f,Color.i=$FF000000)
    
     If AddElement(PageToPrint()\PageData())
@@ -526,7 +560,8 @@ Module CDPrint
     EndIf
    
   EndProcedure
-  
+ 
+ 
   Procedure PrintText(X1.i,Y1.i,Font.s,Size.i,Text.s,Color.i=$FF000000)
    
     If AddElement(PageToPrint()\PageData())
@@ -540,46 +575,32 @@ Module CDPrint
     EndIf 
    
   EndProcedure
-  
+ 
+ 
   Procedure PrintImage(Image.i,X1.i,Y1.i,X2.i,Y2.i,Transparency.i=255)
-    
-    Protected PrintImage.i
-    PrintImage = CopyImage(Image, #PB_Any)
-    If IsImage(PrintImage)
+   
+    If IsImage(Image)
       If AddElement(PageToPrint()\PageData())
         PageToPrint()\PageData()\Type = #PrintType_Image
         PageToPrint()\PageData()\x1 = X1
         PageToPrint()\PageData()\y1 = Y1
         PageToPrint()\PageData()\x2 = X2
         PageToPrint()\PageData()\y2 = Y2
-        PageToPrint()\PageData()\Image = PrintImage
+        PageToPrint()\PageData()\Image = Image
         PageToPrint()\PageData()\Color = RGBA(0, 0, 0, Transparency)
       EndIf
     EndIf
    
   EndProcedure
-  
+ 
+ 
   Procedure PrintImageFromFile(Image.s,X1.i,Y1.i,X2.i,Y2,Transparency.i=255)
-    
-    Protected PrintImage.i
-    PrintImage = LoadImage(#PB_Any, Image)
-    If IsImage(PrintImage)
-      If AddElement(PageToPrint()\PageData())
-        PageToPrint()\PageData()\Type = #PrintType_Image
-        PageToPrint()\PageData()\x1 = X1
-        PageToPrint()\PageData()\y1 = Y1
-        PageToPrint()\PageData()\x2 = X2
-        PageToPrint()\PageData()\y2 = Y2
-        PageToPrint()\PageData()\Image = PrintImage
-        PageToPrint()\PageData()\Color = RGBA(0, 0, 0, Transparency)
-      EndIf
-    EndIf
-    
+    PrintImage(LoadImage(#PB_Any, Image), X1,Y1,X2,Y2,Transparency)
   EndProcedure
-  
+ 
+ 
   Procedure PrintCanvas(Canvas.i,X1.i,Y1.i,X2.i=0,Y2=0,Transparency.i=255)
-    
-    Protected PrintImage.i
+   
     If IsGadget(Canvas)
       If StartDrawing(CanvasOutput(Canvas))
         If X2 = 0
@@ -588,19 +609,7 @@ Module CDPrint
         If Y2 = 0
           Y2 = GadgetHeight(Canvas) ;Adjust For mm
         EndIf
-        
-        PrintImage = GrabDrawingImage(#PB_Any, 0, 0, GadgetWidth(Canvas), GadgetHeight(Canvas))
-        If IsImage(PrintImage)
-          If AddElement(PageToPrint()\PageData())
-            PageToPrint()\PageData()\Type = #PrintType_Image
-            PageToPrint()\PageData()\x1 = X1
-            PageToPrint()\PageData()\y1 = Y1
-            PageToPrint()\PageData()\x2 = X2
-            PageToPrint()\PageData()\y2 = Y2
-            PageToPrint()\PageData()\Image = PrintImage
-            PageToPrint()\PageData()\Color = RGBA(0, 0, 0, Transparency)
-          EndIf
-        EndIf        
+        PrintImage(GrabDrawingImage(#PB_Any, 0, 0, GadgetWidth(Canvas), GadgetHeight(Canvas)),X1,Y1,X2,Y2,Transparency)
         StopDrawing()
       EndIf
     EndIf
@@ -620,7 +629,71 @@ Module CDPrint
   EndProcedure
  
 EndModule
+
+;-
+;-Demo
+;-
+CompilerIf #PB_Compiler_IsMainFile
+ 
+  Enumeration WinMain
+    #WinMain
+    #btnPrint
+    #Canvas
+  EndEnumeration
+ 
+ 
+  Define Event.i
+  Define x.i, y.i
+ 
+  OpenWindow(#WinMain, 5, 5, 600, 400, "CDPrint Test Programme", #PB_Window_SystemMenu)
+  ButtonGadget(#btnPrint, 130, 230, 110, 20, "Print")
+ 
+  CanvasGadget(#Canvas, 10, 10, 200, 200)
+  If StartDrawing(CanvasOutput(#Canvas))
+    StopDrawing()
+  EndIf
+ Debug #PB_Compiler_Home + "Examples/Sources/Data/PureBasicLogo.bmp"
+  Repeat
+   
+    Event = WaitWindowEvent()
+   
+    Select Event
+       
+      Case #PB_Event_Gadget
+        Select EventGadget()
+          Case #btnPrint
+            If CDPrint::Open("Test Print",CDPrint::#Preview) ;Can Be CDPrint::#NoPreview as well
+              CDPrint::AddPage(CDPrint::#Portrait)
+              CDPrint::PrintLine(12,32,45,87,1)
+              CDPrint::PrintBox(20,20,50,50,5, RGBA(10, 200, 20, 128))
+              CDPrint::AddPage(CDPrint::#Portrait)
+              CDPrint::PrintText(20,20,"Arial",32,"The Quick Brown Fox")
+              CDPrint::AddPage(CDPrint::#Landscape)
+              CDPrint::PrintImageFromFile(#PB_Compiler_Home + "Examples/Sources/Data/PureBasicLogo.bmp",5,5,165,34,128)
+              CDPrint::AddPage(CDPrint::#Portrait)
+              CDPrint::PrintCanvas(#Canvas,10,10)
+              CDPrint::Finished()
+            EndIf
+           
+          Case #Canvas
+            If EventType() = #PB_EventType_LeftButtonDown Or (EventType() = #PB_EventType_MouseMove And GetGadgetAttribute(#Canvas, #PB_Canvas_Buttons) & #PB_Canvas_LeftButton)
+              If StartDrawing(CanvasOutput(#Canvas))
+                x = GetGadgetAttribute(#Canvas, #PB_Canvas_MouseX)
+                y = GetGadgetAttribute(#Canvas, #PB_Canvas_MouseY)
+                Circle(x, y, 10, RGB(Random(255), Random(255), Random(255)))
+                StopDrawing()
+              EndIf
+            EndIf
+           
+        EndSelect
+       
+    EndSelect
+   
+  Until Event = #PB_Event_CloseWindow
+ 
+CompilerEndIf
 ; IDE Options = PureBasic 5.60 Beta 3 (Windows - x64)
-; CursorPosition = 9
-; Folding = PAAA5
+; CursorPosition = 654
+; FirstLine = 648
+; Folding = -----
 ; EnableXP
